@@ -1,5 +1,5 @@
 %{
-/* Team Members: Marvin Trajano, Lisa Tran */
+/* Team Members: Marvin Trajano, Lisa Tran, Ben Kray, Victor Tran, Keith Farnham */
 #define INTEGER 257
 #define REAL 258
 #define CHARACTER 259
