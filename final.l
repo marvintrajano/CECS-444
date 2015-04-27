@@ -119,7 +119,15 @@ f/i[a-zA-Z0-9]+				{ }
 "+"|"-"|"*"|"/"				{
 								printf("Recognized Type: Arithmetic Operator\tValue: %s\n", yytext);
 								return ARITHOPERATOR;
-							}						
+							}
+"&&"						{
+								printf("Recognized Type: And \t\t\tValue: %s\n", yytext);
+								return AND;
+							}	
+"||"						{
+								printf("Recognized Type: OR \t\t\tValue: %s\n", yytext);
+								return OR; 
+							}
 . 							{ }
 \n { }
 %%
