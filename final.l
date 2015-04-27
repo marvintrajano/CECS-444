@@ -47,10 +47,11 @@ struct variable * lookup(char* sym)
 		if(!vp->name)
 		{
 			char * unknown = "Unknown";
+			char * init = "0.0";
 			/* For now type and value are defaulted to unknown, later on we must fix this method to have type and value as parameters */
 			vp->name = strdup(sym);
 			vp->type = unknown;
-			vp->value = unknown;
+			vp->value = init;
 			return vp;
 		}
 		if(++vp >= symbolTable+TABLE_SIZE)
