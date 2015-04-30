@@ -128,6 +128,10 @@ f/i[a-zA-Z0-9]+				{ }
 								printf("Recognized Type: OR \t\t\tValue: %s\n", yytext);
 								return OR; 
 							}
+"/0"						{
+								printf("Error: Cannot Divide by Zero");
+								return Error;
+							}
 . 							{ }
 \n { }
 %%
