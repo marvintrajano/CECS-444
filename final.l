@@ -129,6 +129,8 @@ f/i[a-zA-Z0-9]+				{ }
 								return OR; 
 							}
 . 							{ }
+"DSYMTAB"					{ 	return DSYMTAB 
+							}
 \n { }
 %%
 int compare (const void * a, const void * b)
