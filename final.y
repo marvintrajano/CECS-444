@@ -119,47 +119,46 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 %%
 
 arith_op
-	: ADD | SUBTRACT | MULTIPLY | DIVIDE  { strcpy($$, $1); }
+	: ADD | SUBTRACT | MULTIPLY | DIVIDE  		{ strcpy($$, $1); }
 rel_op
-	: LT | LTE | GT | GTE | EQ | NEQ        { strcpy($$, $1); }
+	: LT | LTE | GT | GTE | EQ | NEQ        	{ strcpy($$, $1); }
 bool_op
-	: AND | OR                             { strcpy($$, $1); }
+	: AND | OR                             		{ strcpy($$, $1); }
 
 number
-	: INTEGER    		{ $$ = $1; }
+	: INTEGER    								{ $$ = $1; }
 number
-	: REAL			{ $$ = $1; }
+	: REAL										{ $$ = $1; }
 num_expr
-	: number		{ $$ = $1; }
+	: number									{ $$ = $1; }
 num_expr
-	: VARIABLE { printf("CALL METHOD TO GET VARIABLE'S NUMBER VALUE HERE\n"); }
+	: VARIABLE 									{ printf("CALL METHOD TO GET VARIABLE'S NUMBER VALUE HERE\n"); }
 num_expr
-	: num_expr arith_op num_expr  { $$ = numEval($2, $1, $3); }
+	: num_expr arith_op num_expr 				{ $$ = numEval($2, $1, $3); }
 num_expr
-	: '(' num_expr ')'    { $$ = $2; }
+	: '(' num_expr ')'    						{ $$ = $2; }
 bool_expr
-	: num_expr rel_op num_expr  { $$ = relEval($2, $1, $3); }
+	: num_expr rel_op num_expr  				{ $$ = relEval($2, $1, $3); }
 bool_expr
-	: bool_expr bool_op bool_expr { $$ = boolEval($2, $1, $3); }
+	: bool_expr bool_op bool_expr 				{ $$ = boolEval($2, $1, $3); }
 bool_expr
-	: '(' bool_expr ')'           { $$ = $2; }
+	: '(' bool_expr ')'          				{ $$ = $2; }
 ass_expr
-	: VARIABLE ASSIGNMENT num_expr { printf("ASSIGNMENT FOUND - CALL METHOD TO WORK ON SYMBOL TABLE HERE (ASSIGN VALUE TO VAR)\n"); }
+	: VARIABLE ASSIGNMENT num_expr 				{ printf("ASSIGNMENT FOUND - CALL METHOD TO DO WORK ON SYMBOL TABLE HERE (ASSIGN VALUE TO VAR)\n"); }
 print_expr
-	: PRINT string_expr { printf("%s\n", $2); }
+	: PRINT string_expr 						{ printf("%s\n", $2); }
 dsymtab_expr
-	: DSYMTAB { printf("DSYMTAB FOUND - CALL METHOD TO PRINT SYMBOL TABLE HERE\n"); }
+	: DSYMTAB 									{ printf("DSYMTAB FOUND - CALL METHOD TO PRINT SYMBOL TABLE HERE\n"); }
 string_expr
-	: STRING { strcpy($$, $1); }
+	: STRING 									{ strcpy($$, $1); }
 string_expr
-	: num_expr { char tmp[MAX_STRING_LEN+1]; snprintf(tmp, (MAX_STRING_LEN + 1), "%g", $1); strcpy($$, tmp); }
+	: num_expr 									{ char tmp[MAX_STRING_LEN+1]; snprintf(tmp, (MAX_STRING_LEN + 1), "%g", $1); strcpy($$, tmp); }
 string_expr
-	: bool_expr { strcpy($$, getBoolWord($1)); }
+	: bool_expr 								{ strcpy($$, getBoolWord($1)); }
 string_expr
-	: string_expr COMMA string_expr { strcat($1, $3); strcpy($$, $1); }
+	: string_expr COMMA string_expr 			{ strcat($1, $3); strcpy($$, $1); }
 if_expr
-	: IF bool_expr NL THEN NL ass_expr NL FI { printf("IF STATEMENT DETECTED!\n"); }
-	
+	: IF bool_expr NL THEN NL ass_expr NL FI	{ printf("IF STATEMENT DETECTED! - WRITE METHOD TO EVALUATE IF STATEMENT HERE\n"); }
 			    
 program
 	: 
