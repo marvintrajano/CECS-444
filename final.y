@@ -67,9 +67,10 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 	char theOperator[MAX_STRING_LEN + 1];
 	char theVariable[MAX_STRING_LEN + 1];
 	char theReserved[MAX_STRING_LEN + 1];
+	char theString[MAX_STRING_LEN + 1];
 	unsigned int theBoolean;
 }
-
+%error-verbose
 %token NL
 %token <theOperator> LT
 %token <theOperator> LTE
@@ -90,6 +91,8 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 %token <theInt> INTEGER
 %token <theReal> REAL
 %token <theVariable> VARIABLE
+%token <theReserved> STRING
+%token <theReserved> COMMA
 
 %type <theOperator> arith_op
 %type <theOperator> bool_op
@@ -99,7 +102,7 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 %type <theBoolean> bool_expr
 %type <theOperator> ass_expr
 %type <theReserved> reserved_expr
-%type <theReserved> print_expr
+%type <theReserved> string_expr
 
 %left AND OR
 %left LT LTE GT GTE EQ NEQ
@@ -110,35 +113,57 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 
 %%
 
-arith_op : ADD | SUBTRACT | MULTIPLY | DIVIDE  { strcpy($$, $1); }
-rel_op : LT | LTE | GT | GTE | EQ | NEQ        { strcpy($$, $1); }
-bool_op : AND | OR                             { strcpy($$, $1); }
+arith_op
+	: ADD | SUBTRACT | MULTIPLY | DIVIDE  { strcpy($$, $1); }
+rel_op
+	: LT | LTE | GT | GTE | EQ | NEQ        { strcpy($$, $1); }
+bool_op
+	: AND | OR                             { strcpy($$, $1); }
 
-number : INTEGER    		{ $$ = $1; }
-number : REAL			{ $$ = $1; }
-num_expr : number		{ $$ = $1; }
-num_expr : VARIABLE { printf("CALL METHOD TO GET VARIABLE'S NUMBER VALUE HERE\n"); }
-num_expr : num_expr arith_op num_expr  { $$ = numEval($2, $1, $3); }
-num_expr : '(' num_expr ')'    { $$ = $2; }
-bool_expr : num_expr rel_op num_expr  { $$ = relEval($2, $1, $3); }
-bool_expr : bool_expr bool_op bool_expr { $$ = boolEval($2, $1, $3); }
-bool_expr : '(' bool_expr ')'           { $$ = $2; }
-ass_expr : VARIABLE ASSIGNMENT num_expr { printf("ASSIGNMENT FOUND - CALL METHOD TO WORK ON SYMBOL TABLE HERE (ASSIGN VALUE TO VAR)\n"); }
-reserved_expr : DSYMTAB { printf("DSYMTAB FOUND - CALL METHOD TO PRINT SYMBOL TABLE HERE\n"); }
-			  | print_expr {  }
-print_expr : PRINT number { printf("PRINT FOUND - CALL METHOD TO PRINT HERE\n"); }
-			  
-program : 
-        | statement_list NL
-        ;
+number
+	: INTEGER    		{ $$ = $1; }
+number
+	: REAL			{ $$ = $1; }
+num_expr
+	: number		{ $$ = $1; }
+num_expr
+	: VARIABLE { printf("CALL METHOD TO GET VARIABLE'S NUMBER VALUE HERE\n"); }
+num_expr
+	: num_expr arith_op num_expr  { $$ = numEval($2, $1, $3); }
+num_expr
+	: '(' num_expr ')'    { $$ = $2; }
+bool_expr
+	: num_expr rel_op num_expr  { $$ = relEval($2, $1, $3); }
+bool_expr
+	: bool_expr bool_op bool_expr { $$ = boolEval($2, $1, $3); }
+bool_expr
+	: '(' bool_expr ')'           { $$ = $2; }
+ass_expr
+	: VARIABLE ASSIGNMENT num_expr { printf("ASSIGNMENT FOUND - CALL METHOD TO WORK ON SYMBOL TABLE HERE (ASSIGN VALUE TO VAR)\n"); }
+reserved_expr
+	: DSYMTAB { printf("DSYMTAB FOUND - CALL METHOD TO PRINT SYMBOL TABLE HERE\n"); }
+	| PRINT string_expr { printf("PRINT FOUND - CALL METHOD TO PRINT HERE\n"); }
+string_expr
+	: STRING { strcpy($$, $1); }
+string_expr
+	: number { printf("CHANGED NUMBER TO STRING\n"); }
+string_expr
+	: STRING COMMA string_expr {  }
+			    
+program
+	: 
+	| statement_list NL
+	;
 
-statement_list : 
-               | statement_list statement
-               ;
+statement_list
+	: 
+	| statement_list statement
+	;
                   
-statement : ass_expr NL {  }
-		  | reserved_expr NL {  }
-          ;
+statement
+	: ass_expr NL {  }
+	| reserved_expr NL {  }
+	;
 %%
 
 int main(int argc, char **argv)

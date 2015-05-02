@@ -4,7 +4,11 @@
    #include <string.h>
    #include "final.h"
    #include "final.tab.h"
+   
+   int isNullTerminated = 1;
 %}
+
+%x string
 
 %%
 
@@ -15,6 +19,20 @@
 [0-9]*\.[0-9]+				{ 	
 								yylval.theReal = atof(yytext); 
 								return(REAL);
+							}
+\"							{	
+								isNullTerminated = 1;
+								BEGIN(string);
+							}
+<string>[^"]*				{	
+								strcpy(yylval.theString, yytext);
+								isNullTerminated = 0;
+							}
+<string>\"					{ 
+								if(isNullTerminated == 1) 
+									strcpy(yylval.theString, yytext);; 
+								BEGIN(INITIAL);
+								return STRING;
 							}
 [a-zA-Z][0-9]*				{	
 								strcpy(yylval.theVariable, yytext);
@@ -28,6 +46,10 @@
 								strcpy(yylval.theReserved, yytext);
 								return PRINT;
 							}
+","						{	
+								strcpy(yylval.theReserved, yytext);
+								return COMMA;
+							}							
 ":="						{	
 								strcpy(yylval.theOperator, yytext);
 								return ASSIGNMENT;
