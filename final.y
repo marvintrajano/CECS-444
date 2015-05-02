@@ -142,13 +142,13 @@ ass_expr
 	: VARIABLE ASSIGNMENT num_expr { printf("ASSIGNMENT FOUND - CALL METHOD TO WORK ON SYMBOL TABLE HERE (ASSIGN VALUE TO VAR)\n"); }
 reserved_expr
 	: DSYMTAB { printf("DSYMTAB FOUND - CALL METHOD TO PRINT SYMBOL TABLE HERE\n"); }
-	| PRINT string_expr { printf("PRINT FOUND - CALL METHOD TO PRINT HERE\n"); }
+	| PRINT string_expr { printf("%s\n", $2); }
 string_expr
 	: STRING { strcpy($$, $1); }
 string_expr
-	: number { printf("CHANGED NUMBER TO STRING\n"); }
+	: num_expr { char tmp[MAX_STRING_LEN+1]; snprintf(tmp, (MAX_STRING_LEN + 1), "%g", $1); strcpy($$, tmp); }
 string_expr
-	: STRING COMMA string_expr {  }
+	: string_expr COMMA string_expr { strcat($1, $3); strcpy($$, $1); }
 			    
 program
 	: 
