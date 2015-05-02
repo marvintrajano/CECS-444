@@ -108,7 +108,6 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 %type <theReserved> print_expr
 %type <theReserved> string_expr
 %type <theReserved> if_expr
-%type <theReserved> execute_expr
 
 %left AND OR
 %left LT LTE GT GTE EQ NEQ
@@ -160,8 +159,6 @@ string_expr
 	: string_expr COMMA string_expr { strcat($1, $3); strcpy($$, $1); }
 if_expr
 	: IF bool_expr NL THEN NL ass_expr NL FI { printf("IF STATEMENT DETECTED!\n"); }
-execute_expr
-	: ass_expr {  }
 	
 			    
 program
