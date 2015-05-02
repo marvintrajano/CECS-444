@@ -87,6 +87,9 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 %token <theOperator> ASSIGNMENT
 %token <theReserved> DSYMTAB
 %token <theReserved> PRINT
+%token <theReserved> IF
+%token <theReserved> THEN
+%token <theReserved> FI
 
 %token <theInt> INTEGER
 %token <theReal> REAL
@@ -104,6 +107,8 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 %type <theReserved> dsymtab_expr
 %type <theReserved> print_expr
 %type <theReserved> string_expr
+%type <theReserved> if_expr
+%type <theReserved> execute_expr
 
 %left AND OR
 %left LT LTE GT GTE EQ NEQ
@@ -153,6 +158,11 @@ string_expr
 	: bool_expr { strcpy($$, getBoolWord($1)); }
 string_expr
 	: string_expr COMMA string_expr { strcat($1, $3); strcpy($$, $1); }
+if_expr
+	: IF bool_expr NL THEN NL ass_expr NL FI { printf("IF STATEMENT DETECTED!\n"); }
+execute_expr
+	: ass_expr {  }
+	
 			    
 program
 	: 
@@ -168,6 +178,7 @@ statement
 	: ass_expr NL {  }
 	| print_expr NL {  }
 	| dsymtab_expr NL {  }
+	| if_expr NL {  }
 	| NL {  }
 	;
 %%

@@ -46,7 +46,19 @@
 								strcpy(yylval.theReserved, yytext);
 								return PRINT;
 							}
-","						{	
+"IF"						{ 	
+								strcpy(yylval.theReserved, yytext);
+								return IF;
+							}
+"THEN"						{ 	
+								strcpy(yylval.theReserved, yytext);
+								return THEN;
+							}
+"FI"						{ 	
+								strcpy(yylval.theReserved, yytext);
+								return FI;
+							}
+","							{	
 								strcpy(yylval.theReserved, yytext);
 								return COMMA;
 							}							
