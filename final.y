@@ -101,7 +101,8 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 %type <theReal> num_expr
 %type <theBoolean> bool_expr
 %type <theOperator> ass_expr
-%type <theReserved> reserved_expr
+%type <theReserved> dsymtab_expr
+%type <theReserved> print_expr
 %type <theReserved> string_expr
 
 %left AND OR
@@ -140,9 +141,10 @@ bool_expr
 	: '(' bool_expr ')'           { $$ = $2; }
 ass_expr
 	: VARIABLE ASSIGNMENT num_expr { printf("ASSIGNMENT FOUND - CALL METHOD TO WORK ON SYMBOL TABLE HERE (ASSIGN VALUE TO VAR)\n"); }
-reserved_expr
+print_expr
+	: PRINT string_expr { printf("%s\n", $2); }
+dsymtab_expr
 	: DSYMTAB { printf("DSYMTAB FOUND - CALL METHOD TO PRINT SYMBOL TABLE HERE\n"); }
-	| PRINT string_expr { printf("%s\n", $2); }
 string_expr
 	: STRING { strcpy($$, $1); }
 string_expr
@@ -164,7 +166,8 @@ statement_list
                   
 statement
 	: ass_expr NL {  }
-	| reserved_expr NL {  }
+	| print_expr NL {  }
+	| dsymtab_expr NL {  }
 	| NL {  }
 	;
 %%
