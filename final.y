@@ -1,5 +1,5 @@
 %{
-#include "eg.h"
+#include "final.h"
 
 void yyerror(char *s) { fprintf(stderr, "%s\n", s); }
 
