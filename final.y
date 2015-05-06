@@ -1,13 +1,6 @@
 %{
 #include "final.h"
 
-struct variable
-{
-	char *name;
-	char *type;
-	double value;
-};
-
 void yyerror(char *s) { fprintf(stderr, "%s\n", s); }
 
 char *getBoolWord(unsigned int value)
@@ -63,57 +56,6 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
       printf("ERROR: Unknown boolean operator: %s\n", bool_op);
       return 0;
    }
-}
-
-extern struct variable symbolTable[TABLE_SIZE];
-extern struct variable * lookup(char* sym);
-
-struct variable * assign(char* sym, double val)
-{
-	struct variable *vp = &symbolTable[symhash(sym)%TABLE_SIZE];
-	int vcount = TABLE_SIZE;
-	while(--vcount >= 0)
-	{
-		if(vp->name && !strcmp(vp->name, sym))
-		{
-			vp->value = val;
-		}
-		if(!vp->name)
-		{
-			char * unknown = "Unknown";
-			/* For now type and value are defaulted to unknown, later on we must fix this method to have type and value as parameters */
-			vp->name = strdup(sym);
-			vp->type = unknown;
-			vp->value = 0.0;
-			return vp;
-		}
-		if(++vp >= symbolTable+TABLE_SIZE)
-			vp = symbolTable;
-	}
-}
-
-double getVal(char* sym)
-{
-	struct variable *vp = &symbolTable[symhash(sym)%TABLE_SIZE];
-	int vcount = TABLE_SIZE;
-	while(--vcount >= 0)
-	{
-		if(vp->name && !strcmp(vp->name, sym))
-		{
-			return vp->value;
-		}
-		if(!vp->name)
-		{
-			char * unknown = "Unknown";
-			/* For now type and value are defaulted to unknown, later on we must fix this method to have type and value as parameters */
-			vp->name = strdup(sym);
-			vp->type = unknown;
-			vp->value = 0.0;
-			return -8008.0;
-		}
-		if(++vp >= symbolTable+TABLE_SIZE)
-			vp = symbolTable;
-	}
 }
 
 %}
@@ -190,7 +132,7 @@ number
 num_expr
 	: number									{ $$ = $1; }
 num_expr
-	: VARIABLE 									{ $$ = getVal($1); }
+	: VARIABLE 									{ printf("CALL METHOD TO GET VARIABLE'S NUMBER VALUE HERE\n"); }
 num_expr
 	: num_expr arith_op num_expr 				{ $$ = numEval($2, $1, $3); }
 num_expr
@@ -202,7 +144,7 @@ bool_expr
 bool_expr
 	: '(' bool_expr ')'          				{ $$ = $2; }
 ass_expr
-	: VARIABLE ASSIGNMENT num_expr 				{ assign($1, $3); }
+	: VARIABLE ASSIGNMENT num_expr 				{ printf("ASSIGNMENT FOUND - CALL METHOD TO DO WORK ON SYMBOL TABLE HERE (ASSIGN VALUE TO VAR)\n"); }
 print_expr
 	: PRINT string_expr 						{ printf("%s\n", $2); }
 dsymtab_expr

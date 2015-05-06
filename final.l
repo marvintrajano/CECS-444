@@ -6,41 +6,6 @@
    #include "final.tab.h"
    
    int isNullTerminated = 1;
-   
-struct variable
-{
-	char *name;
-	char *type;
-	double value;
-};
-
-/* simple symbol table of fixed size */
-struct variable symbolTable[TABLE_SIZE];
-
-struct variable * lookup(char* sym)
-{
-	struct variable *vp = &symbolTable[symhash(sym)%TABLE_SIZE];
-	int vcount = TABLE_SIZE;
-	while(--vcount >= 0)
-	{
-		if(vp->name && !strcmp(vp->name, sym))
-		{
-			return vp;
-		}
-		if(!vp->name)
-		{
-			char * unknown = "Unknown";
-			/* For now type and value are defaulted to unknown, later on we must fix this method to have type and value as parameters */
-			vp->name = strdup(sym);
-			vp->type = unknown;
-			vp->value = 0.0;
-			return vp;
-		}
-		if(++vp >= symbolTable+TABLE_SIZE)
-			vp = symbolTable;
-	}
-}
-
 %}
 
 %x string
@@ -70,7 +35,6 @@ struct variable * lookup(char* sym)
 								return STRING;
 							}
 [a-zA-Z][0-9]*				{	
-								lookup(yytext);
 								strcpy(yylval.theVariable, yytext);
 								return VARIABLE;
 							}
@@ -154,28 +118,4 @@ struct variable * lookup(char* sym)
 \n		      				{ return NL; }
 .                    
 %%
-symhash(char *sym)
-{
-	unsigned int hash = 0;
-	unsigned c;
-	while(c = *sym++)
-		hash = hash*9^c;
-	return hash;
-}
-
-symcompare(const void *xa, const void *xb)
-{
-	const struct variable *a = xa;
-	const struct variable *b = xb;
-	
-	if(!a->name)
-	{
-		if(!b->name)
-			return 0;
-		return 1;
-	}
-	if(!b->name)
-		return -1;
-	return strcmp(a->name, b->name);
-}
 
