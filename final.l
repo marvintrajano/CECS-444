@@ -6,12 +6,12 @@
    #include "final.tab.h"
    
    int isNullTerminated = 1;
-
-   struct variable
+   
+struct variable
 {
 	char *name;
 	char *type;
-	char *value;
+	double value;
 };
 
 /* simple symbol table of fixed size */
@@ -33,7 +33,7 @@ struct variable * lookup(char* sym)
 			/* For now type and value are defaulted to unknown, later on we must fix this method to have type and value as parameters */
 			vp->name = strdup(sym);
 			vp->type = unknown;
-			vp->value = unknown;
+			vp->value = 0.0;
 			return vp;
 		}
 		if(++vp >= symbolTable+TABLE_SIZE)
@@ -70,6 +70,7 @@ struct variable * lookup(char* sym)
 								return STRING;
 							}
 [a-zA-Z][0-9]*				{	
+								lookup(yytext);
 								strcpy(yylval.theVariable, yytext);
 								return VARIABLE;
 							}
@@ -153,16 +154,13 @@ struct variable * lookup(char* sym)
 \n		      				{ return NL; }
 .                    
 %%
-tableprint()
+symhash(char *sym)
 {
-	qsort(symbolTable, TABLE_SIZE, sizeof(struct variable), symcompare);
-	printf("\nSymbol Table\n");
-	for(i = 0; i < 10; i++)
-	{
-		struct variable *vp = &symbolTable[i];
-		printf("Variable name: %s\ttype: %s\tvalue: %s\n", vp->name, vp->type, vp->value);
-		//Print symbol table
-	}
+	unsigned int hash = 0;
+	unsigned c;
+	while(c = *sym++)
+		hash = hash*9^c;
+	return hash;
 }
 
 symcompare(const void *xa, const void *xb)
@@ -179,4 +177,16 @@ symcompare(const void *xa, const void *xb)
 	if(!b->name)
 		return -1;
 	return strcmp(a->name, b->name);
+}
+
+tableprint()
+{
+	qsort(symbolTable, TABLE_SIZE, sizeof(struct variable), symcompare);
+	printf("\nSymbol Table\n");
+	for(i = 0; i < 10; i++)
+	{
+		struct variable *vp = &symbolTable[i];
+		printf("Variable name: %s\ttype: %s\tvalue: %s\n", vp->name, vp->type, vp->value);
+		//Print symbol table
+	}
 }
