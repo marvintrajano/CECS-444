@@ -95,6 +95,14 @@ struct variable
 								strcpy(yylval.theOperator, yytext);
 								return(DIVIDE); 
 							}
+"("							{
+								strcpy(yylval.theOperator, yytext);	
+								return(LP);
+							}
+")"							{
+								strcpy(yylval.theOperator, yytext);
+								return(RP);
+							}
 "<"		      				{  
 								strcpy(yylval.theOperator, yytext);
 								return(LT); 
