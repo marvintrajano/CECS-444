@@ -6,6 +6,18 @@
    #include "final.tab.h"
    
    int isNullTerminated = 1;
+   
+struct variable
+{
+	char *name;
+	char *type;
+	double value;
+};
+
+
+
+
+
 %}
 
 %x string
@@ -35,6 +47,7 @@
 								return STRING;
 							}
 [a-zA-Z][0-9]*				{	
+								lookup(yytext);
 								strcpy(yylval.theVariable, yytext);
 								return VARIABLE;
 							}
@@ -82,6 +95,14 @@
 								strcpy(yylval.theOperator, yytext);
 								return(DIVIDE); 
 							}
+"("							{
+								strcpy(yylval.theOperator, yytext);	
+								return(LP);
+							}
+")"							{
+								strcpy(yylval.theOperator, yytext);
+								return(RP);
+							}
 "<"		      				{  
 								strcpy(yylval.theOperator, yytext);
 								return(LT); 
@@ -118,4 +139,13 @@
 \n		      				{ return NL; }
 .                    
 %%
+symhash(char *sym)
+{
+	unsigned int hash = 0;
+	unsigned c;
+	while(c = *sym++)
+		hash = hash*9^c;
+	return hash;
+}
+
 
