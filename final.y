@@ -15,6 +15,62 @@ char *getBoolWord(unsigned int value)
 	return (value == 1) ? "true" : "false";
 }
 
+/* simple symbol table of fixed size */
+struct variable symbolTable[TABLE_SIZE];
+
+symcompare(const void *xa, const void *xb)
+{
+	const struct variable *a = xa;
+	const struct variable *b = xb;
+	
+	if(!a->name)
+	{
+		if(!b->name)
+			return 0;
+		return 1;
+	}
+	if(!b->name)
+		return -1;
+	return strcmp(a->name, b->name);
+}
+
+struct variable * lookup(char* sym)
+{
+	struct variable *vp = &symbolTable[symhash(sym)%TABLE_SIZE];
+	int vcount = TABLE_SIZE;
+	while(--vcount >= 0)
+	{
+		if(vp->name && !strcmp(vp->name, sym))
+		{
+			return vp;
+		}
+		if(!vp->name)
+		{
+			char * unknown = "Unknown";
+			/* For now type and value are defaulted to unknown, later on we must fix this method to have type and value as parameters */
+			vp->name = strdup(sym);
+			vp->type = unknown;
+			vp->value = 0.0;
+			return vp;
+		}
+		if(++vp >= symbolTable+TABLE_SIZE)
+			vp = symbolTable;
+	}
+}
+
+void tableprint()
+{
+	qsort(symbolTable, TABLE_SIZE, sizeof(struct variable), symcompare);
+	printf("\nSymbol Table\n");
+	int i;
+	for(i  = 0 ; i< 10; i++)
+	{
+		struct variable *vp = &symbolTable[i];
+		printf("Variable name: %s\tvalue: %f\n", vp->name, vp->value);
+		//Print symbol table
+	}
+}
+
 double numEval(char *operator, double operand1, double operand2)
 {
    if(strcmp(operator, "+") == 0) return operand1 + operand2;
@@ -78,15 +134,6 @@ struct variable * assign(char* sym, double val)
 		{
 			vp->value = val;
 		}
-		if(!vp->name)
-		{
-			char * unknown = "Unknown";
-			/* For now type and value are defaulted to unknown, later on we must fix this method to have type and value as parameters */
-			vp->name = strdup(sym);
-			vp->type = unknown;
-			vp->value = 0.0;
-			return vp;
-		}
 		if(++vp >= symbolTable+TABLE_SIZE)
 			vp = symbolTable;
 	}
@@ -101,15 +148,6 @@ double getVal(char* sym)
 		if(vp->name && !strcmp(vp->name, sym))
 		{
 			return vp->value;
-		}
-		if(!vp->name)
-		{
-			char * unknown = "Unknown";
-			/* For now type and value are defaulted to unknown, later on we must fix this method to have type and value as parameters */
-			vp->name = strdup(sym);
-			vp->type = unknown;
-			vp->value = 0.0;
-			return -8008.0;
 		}
 		if(++vp >= symbolTable+TABLE_SIZE)
 			vp = symbolTable;
@@ -206,7 +244,7 @@ ass_expr
 print_expr
 	: PRINT string_expr 						{ printf("%s\n", $2); }
 dsymtab_expr
-	: DSYMTAB 									{ printf("DSYMTAB FOUND - CALL METHOD TO PRINT SYMBOL TABLE HERE\n"); }
+	: DSYMTAB 									{ tableprint(); }
 string_expr
 	: STRING 									{ strcpy($$, $1); }
 string_expr
@@ -216,7 +254,8 @@ string_expr
 string_expr
 	: string_expr COMMA string_expr 			{ strcat($1, $3); strcpy($$, $1); }
 if_expr
-	: IF bool_expr NL THEN NL ass_expr NL FI	{ printf("IF STATEMENT DETECTED! - WRITE METHOD TO EVALUATE IF STATEMENT HERE\n"); }
+	: IF bool_expr NL THEN NL ass_expr NL FI	{ if($2){$6;}}
+													 
 			    
 program
 	: 
