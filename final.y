@@ -124,7 +124,7 @@ unsigned int boolEval(char *bool_op, unsigned int op1, unsigned int op2)
 extern struct variable symbolTable[TABLE_SIZE];
 extern struct variable * lookup(char* sym);
 
-struct variable * assign(char* sym, double val)
+void assign(char* sym, double val)
 {
 	struct variable *vp = &symbolTable[symhash(sym)%TABLE_SIZE];
 	int vcount = TABLE_SIZE;
@@ -256,7 +256,7 @@ string_expr
 string_expr
 	: string_expr COMMA string_expr 			{ strcat($1, $3); strcpy($$, $1); }
 if_expr
-	: IF bool_expr NL THEN NL ass_expr NL FI	{ if($2){$6;}}
+	: IF bool_expr NL THEN NL VARIABLE ASSIGNMENT num_expr NL FI	{ if($2 == 1) assign($6, $8); }
 													 
 			    
 program
