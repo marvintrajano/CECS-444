@@ -178,6 +178,8 @@ double getVal(char* sym)
 %token <theOperator> SUBTRACT
 %token <theOperator> MULTIPLY
 %token <theOperator> DIVIDE
+%token <theOperator> LP
+%token <theOperator> RP
 %token <theOperator> AND
 %token <theOperator> OR
 %token <theOperator> ASSIGNMENT
@@ -210,10 +212,10 @@ double getVal(char* sym)
 %left '+' '-'
 %left '*' '/'
 
+
 %start program
 
 %%
-
 arith_op
 	: ADD | SUBTRACT | MULTIPLY | DIVIDE  		{ strcpy($$, $1); }
 rel_op
@@ -232,13 +234,13 @@ num_expr
 num_expr
 	: num_expr arith_op num_expr 				{ $$ = numEval($2, $1, $3); }
 num_expr
-	: '(' num_expr ')'    						{ $$ = $2; }
+	: LP num_expr RP    						{ $$ = $2; }
 bool_expr
 	: num_expr rel_op num_expr  				{ $$ = relEval($2, $1, $3); }
 bool_expr
 	: bool_expr bool_op bool_expr 				{ $$ = boolEval($2, $1, $3); }
 bool_expr
-	: '(' bool_expr ')'          				{ $$ = $2; }
+	: LP bool_expr RP          					{ $$ = $2; }
 ass_expr
 	: VARIABLE ASSIGNMENT num_expr 				{ assign($1, $3); }
 print_expr
@@ -247,7 +249,7 @@ dsymtab_expr
 	: DSYMTAB 									{ tableprint(); }
 string_expr
 	: STRING 									{ strcpy($$, $1); }
-string_expr
+string_expra
 	: num_expr 									{ char tmp[MAX_STRING_LEN+1]; snprintf(tmp, (MAX_STRING_LEN + 1), "%g", $1); strcpy($$, tmp); }
 string_expr
 	: bool_expr 								{ strcpy($$, getBoolWord($1)); }
