@@ -249,7 +249,7 @@ dsymtab_expr
 	: DSYMTAB 									{ tableprint(); }
 string_expr
 	: STRING 									{ strcpy($$, $1); }
-string_expra
+string_expr
 	: num_expr 									{ char tmp[MAX_STRING_LEN+1]; snprintf(tmp, (MAX_STRING_LEN + 1), "%g", $1); strcpy($$, tmp); }
 string_expr
 	: bool_expr 								{ strcpy($$, getBoolWord($1)); }
