@@ -2,8 +2,8 @@
 /* Team Members: Marvin Trajano, Lisa Tran, Ben Kray, Victor Tran, Keith Farnham */
 #include <stdlib.h>
 #include <string.h>
-#include "final.h"
-#include "final.tab.h"
+#include "project.h"
+#include "project.tab.h"
    
 int isNullTerminated = 1;
 %}
