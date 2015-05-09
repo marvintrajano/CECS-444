@@ -1,6 +1,6 @@
 %{
 /* Team Members: Marvin Trajano, Lisa Tran, Ben Kray, Victor Tran, Keith Farnham */
-#include "final.h"
+#include "project.h"
 
 struct variable
 {
