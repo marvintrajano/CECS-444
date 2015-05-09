@@ -1,6 +1,6 @@
 %{
 /* Team Members: Marvin Trajano, Lisa Tran, Ben Kray, Victor Tran, Keith Farnham */
-#include "project.h"
+#include "final.h"
 
 struct variable
 {
@@ -229,4 +229,49 @@ bool_expr
 bool_expr
 	: bool_expr bool_op bool_expr { $$ = boolEval($2, $1, $3); }
 bool_expr
-	: LP 
+	: LP bool_expr RP { $$ = $2; }
+ass_expr
+	: VARIABLE ASSIGNMENT num_expr { assign($1, $3); }
+print_expr
+	: PRINT string_expr { printf("\n%s\n", $2); }
+dsymtab_expr
+	: DSYMTAB { tablePrint(); }
+string_expr
+	: STRING { strcpy($$, $1); }
+string_expr
+	: num_expr { char tmp[MAX_STRING_LEN+1]; snprintf(tmp, (MAX_STRING_LEN + 1), "%g", $1); strcpy($$, tmp); }
+string_expr
+	: bool_expr { strcpy($$, getBoolWord($1)); }
+string_expr
+	: string_expr COMMA string_expr { strcat($1, $3); strcpy($$, $1); }
+if_expr
+	: IF bool_expr NL THEN NL VARIABLE ASSIGNMENT num_expr NL FI { if($2 == 1) assign($6, $8); }
+													    
+program
+	: 
+	| statement_list NL
+	;
+
+statement_list
+	: 
+	| statement_list statement
+	;
+                  
+statement
+	: ass_expr NL {  }
+	| print_expr NL {  }
+	| dsymtab_expr NL {  }
+	| if_expr NL {  }
+	| NL {  }
+	| END { printf("\nGoodbye\n"); YYACCEPT; }
+	;
+%%
+
+int main(int argc, char **argv)
+{
+	head = NULL;
+	current = NULL;
+	temp = NULL;
+	yyparse();
+	return 0;
+}
